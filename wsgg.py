@@ -26,56 +26,39 @@ dd=np.array([3.404288e-002,  6.523048e-002, -4.636852e-002,  1.386835e-002, -1.4
              4.570740e+000,  2.168067e+000, -1.498901e+000,  4.917165e-001, -5.429990e-002,
              1.098169e+002, -5.092359e+001,  2.343236e+001, -5.163892e+000,  4.393889e-001 ]) 
 
-ni = 4
-nj = 5
-nk = 5
+ni,nj,nk = 4,5,5
 
-c = np.empty((ni, nj, nk))
-d = np.empty((ni,nk))
-
-for i in range(ni):
-    for j in range(nj):
-        for k in range(nk):
-            c[i,j,k] = cc[ i*(nj*nk) + j*(nk) + k ]
-
-for i in range(ni):
-    for k in range(nk):
-        d[i,k] = dd[ i*(nk) + k ]
+c = np.reshape(cc, (ni,nj,nk))
+d = np.reshape(dd,(ni,nk))
 
 ################################################################
 
 def get_k_a(T, P, XCO2, XH2O):
 
     nGG = 5            # 4 gray gases and 1 clear gas
+    ni,nj,nk = 4,5,5
 
     Mr = XH2O/XCO2
     Tr = T/1200
 
     K = np.zeros(nGG)
     a = np.zeros(nGG)
-
     b = np.zeros((ni,nj))
-    for i in range(0,ni):
-        for j in range(0,nj):
-            for k in range(nk):
-                b[i,j] += c[i,j,k]*Mr**k
 
-    for i in range(1, nGG):
-        for j in range(nj):
-            a[i] += b[i-1,j]*Tr**j
+    b += ((( c[:,:,4]*Mr + c[:,:,3])*Mr + c[:,:,2])*Mr + c[:,:,1])*Mr + c[:,:,0]
+
+    a[1:] = np.dot(b,Tr**np.arange(nj))
     a[0] = 1-np.sum(a[1:])
-
-    for i in range(1,nGG):
-        for k in range(nk):
-            K[i] += d[i-1,k]*Mr**k
+    K[1:] = np.dot(d,Mr**np.arange(nk))
 
     return K*(P/101325)*(XH2O+XCO2), a
 
+
 ################################################################
 
-K, a = get_k_a(1000,101325,0.1,0.1)
-
-print("K =", K)
-print("a =", a)
+#K, a = get_k_a(1000,101325,0.1,0.1)
+#
+#print("K =", K)
+#print("a =", a)
 
 

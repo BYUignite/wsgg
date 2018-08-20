@@ -1,4 +1,7 @@
 # Weighted sum of grey gases model
+
+This work was supported by the National Science Foundation under grant number CBET-1403403.
+
 * 4 gray gases and 1 clear gas.
 * From paper by M.H. Bordbar, G. Wecel, T. Hyppanen, Combustion and Flame 161 (2014) 2435-2445.
 * Numeric data is slightly different than in the paper.
